@@ -16,7 +16,10 @@ class AlarmClock {
 	};
 
 	removeClock (id) {
+		const beginningLeng = this.alarmCollection.length;
 		this.alarmCollection = this.alarmCollection.filter(item => item.id !== id);
+		const endLeng = this.alarmCollection.length;
+		return beginningLeng > endLeng;
 	};
 
 	getCurrentFormattedTime () {
@@ -24,14 +27,13 @@ class AlarmClock {
 	};
 
 	start () {
-		function checkClock (item) {
-			if (clock.getCurrentFormattedTime() === item.time) {
-				item.callback();
-			};
-		};
 		if(this.timerId === null){
 			const fn = () => {
-				this.alarmCollection.forEach(item => checkClock(item));
+				this.alarmCollection.forEach(item => {
+					if (this.getCurrentFormattedTime() === item.time) {
+						item.callback();
+					};
+				});
 			};
 			this.timerId = setInterval(fn, 1000);
 		};
@@ -54,10 +56,13 @@ class AlarmClock {
 	};
 };
 
-// const clock = new AlarmClock();
-// clock.addClock(clock.getCurrentFormattedTime(), () => console.log('Вставай!'), 1);
-// clock.addClock("20:32", () => {console.log('Пора вставать!'); clock.removeClock(2)}, 2);
-// clock.addClock("20:33", () => console.log('Давай, вставай уже'), 3);
-// clock.printAlarms();
-// clock.start();
+function testCase () {
+	const clock = new AlarmClock();
+	clock.addClock(clock.getCurrentFormattedTime(), () => console.log('Вставай!'), 1);
+	clock.addClock("20:32", () => {console.log('Пора вставать!'); clock.removeClock(2)}, 2);
+	clock.addClock("20:33", () => console.log('Давай, вставай уже'), 3);
+	clock.printAlarms();
+	clock.start();
+};
+
 
