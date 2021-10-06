@@ -6,46 +6,50 @@ function cachingDecoratorNew(func) {
     if (checkIndex !== -1) {
       console.log(`Из кэша: ${cash[checkIndex].result}`);
       return `Из кэша: ${cash[checkIndex].result}`;
-    } else {
-      let result = func( ...args);
-      cash.push({hash, result});
-      if (cash.length > 5) {
-        cash.shift();
-        console.log(`Удален элемент`);
-      };
-      console.log(`Вычисляем: ${result}`);
-      return `Вычисляем: ${result}`;
     };
+    let result = func( ...args);
+    cash.push({hash, result});
+    if (cash.length > 5) {
+      cash.shift();
+      console.log(`Удален элемент`);
+    };
+    console.log(`Вычисляем: ${result}`);
+    return `Вычисляем: ${result}`;
   };
   return wrapper;
 };
 
 function debounceDecoratorNew(func, ms) {
+  let timeout;
   let flag = false;
   function wrapper(...rest) {
+    clearTimeout(timeout);
     if (!flag) {
-      func(...rest);
-      flag = true;
-      setTimeout(() => {
-        flag = false;
-      }, ms);
+      func.apply(this, rest);
     };
+    flag = true;
+    timeout = setTimeout(() => {
+      func.apply(this, rest);
+    }, ms);
   };
   return wrapper;
 };
 
 function debounceDecorator2(func, ms) {
-  let flag = false;
   wrapper.count = 0;
+  let timeout;
+  let flag = false;
   function wrapper(...rest) {
-    wrapper.count++;
+    clearTimeout(timeout);
     if (!flag) {
-      func(...rest);
-      flag = true;
-      setTimeout(() => {
-        flag = false;
-      }, ms);
+      func.apply(this, rest);
+      wrapper.count++;
     };
+    flag = true;
+    timeout = setTimeout(() => {
+      func.apply(this, rest);
+      wrapper.count++;
+    }, ms);
   };
   return wrapper;
 };
